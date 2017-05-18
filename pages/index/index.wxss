@@ -1,0 +1,82 @@
+/**index.wxss**/
+
+/*page {
+  display: block;
+  min-height: 100%;
+  background-color: #eeeeee;
+}*/
+
+view.body {
+  height: 100vh;
+  /*height: 100%;*/
+  position: relative;
+  /*background-color: #eeeeee;*/
+}
+
+view.blur {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  z-index: 1;
+  filter: blur(70px) brightness(70%) saturate(120%);
+  /*-webkit-filter: blur(30px) brightness(90%) saturate(50%);*/
+}
+
+view.main {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 2;
+}
+
+view.info_view {
+  height: 17vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* 定义项目在主轴上的对齐方式 */
+  align-items: center; /* 定义项目在交叉轴上如何对齐 */
+  /*background-color: #dddddd;*/
+}
+
+swiper.img_swiper {
+  height: 83vh;
+  /*background-color: #cccccc;*/
+}
+
+text.title {
+  width: 86vw;
+  text-align: center;
+  font-weight: bold;
+  /*font-style: bold;*/
+  font-size: 20pt;
+  color: #fff;
+  /*color: #000;*/
+  white-space: nowrap; /* 文本不换行 */
+  text-overflow: ellipsis; /* 文本溢出显示省略号 */
+  overflow: hidden; /* 隐藏溢出的部分 */
+  /*background-color: #eeeeee;*/
+}
+
+text.author {
+  width: 86vw;
+  text-align: center;
+  font-weight: normal;
+  font-size: 12pt;
+  color: #fff;
+  /*color: #888888;*/
+  white-space: nowrap; /* 文本不换行 */
+  text-overflow: ellipsis; /* 文本溢出显示省略号 */
+  overflow: hidden; /* 隐藏溢出的部分 */
+  margin-top: 2rpx;
+  /*background-color: #eeeeee;*/
+}
+
+image.img {
+  width: 86vw;
+  height: 74vh;
+  margin-left: 7vw;
+  margin-top: 2vh;
+  background-color: #eee;
+}

@@ -1,0 +1,19 @@
+<!--index.wxml-->
+
+<view class="body">
+  <view class="blur" style="background: #ccc url('{{urlb}}') no-repeat fixed center;"></view>
+  <view class="main">
+    <view class="info_view">
+      <text class="title" bindtap="onTitleTap">{{title}}</text>
+      <text class="author" bindtap="onTitleTap">@{{author}}</text>
+    </view>
+    <swiper class="img_swiper" indicator-dots="true" indicator-active-color="#ff5252" current="{{curSwiperIndex}}" bindchange="onSwiperChange">
+      <swiper-item>
+        <image id="img2d" class="img" src="{{url2d}}" mode="aspectFill" bindtap="onImgTap" bindlongtap="onImgLongTap"></image>
+      </swiper-item>
+      <swiper-item>
+        <image id="img3d" class="img" src="{{url3d}}" mode="aspectFill" bindtap="onImgTap" bindlongtap="onImgLongTap"></image>
+      </swiper-item>
+    </swiper>
+  </view>
+</view>

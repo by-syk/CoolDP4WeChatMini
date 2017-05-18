@@ -1,0 +1,37 @@
+/* history.wxss */
+
+view.body {
+  display: flex;
+  flex-direction: column;
+}
+
+view.list {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  /*background-color: #eeeeee;*/
+}
+
+view.row {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  /*background-color: #eeeeee;*/
+}
+
+image.img {
+  width: 50vw;
+  height: 50vh;
+  background-color: #eee;
+
+}
+
+text.more {
+  width: 100vw;
+  font-weight: normal;
+  font-size: 11pt;
+  color: #888;
+  text-align: center;
+  margin-top: 32rpx;
+  margin-bottom: 32rpx;
+}
