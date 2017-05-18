@@ -1,8 +1,9 @@
 # 「酷安日图」APP的微信小程序 A WeChat Mini Program for Cool Daily Photo APP
 
 
-[下载「酷安日图」APP](http://www.coolapk.com/apk/com.by_syk.cooldp)
+![screenshot](art/screenshot.png)
 
+[下载「酷安日图」APP](http://www.coolapk.com/apk/com.by_syk.cooldp)
 
 体验小程序
 
