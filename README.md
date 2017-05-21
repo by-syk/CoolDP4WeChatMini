@@ -4,9 +4,10 @@
 ![截图](art/screenshots.png)
 
 扫码体验小程序：
+
 ![小程序二维码](art/qrcode.jpg)
 
-> 附：[下载「酷安日图」APP](http://www.coolapk.com/apk/com.by_syk.cooldp)
+> 附：[「酷安日图」APP](http://www.coolapk.com/apk/com.by_syk.cooldp)
 
 
 ### License
