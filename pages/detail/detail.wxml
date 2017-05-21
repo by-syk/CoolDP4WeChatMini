@@ -1,0 +1,14 @@
+<!--detail.wxml-->
+
+<view class="body">
+  <view class="list" wx:for="{{lines}}" wx:key="title">
+    <view class="item">
+      <view class="title_view">
+        <view class="tag"></view>
+        <text class="title" bindtap="onLineTap" data-i="{{index}}">{{item.title}}</text>
+      </view>
+      <text class="desc" bindtap="onLineTap" data-i="{{index}}">{{item.desc}}</text>
+    </view>
+  </view>
+  <button class="got" type="primary" bindtap="onBtnTap">知晓了</button>
+</view>

@@ -1,7 +1,7 @@
 <!--history.wxml-->
 
 <view class="body">
-  <view class="list" wx:for="{{images}}" wx:key="index">
+  <view class="list" wx:for="{{images}}" wx:key="url">
     <view class="row">
       <image class="img" data-i="{{index}}" data-dd="1" src="{{item[0].url}}" mode="aspectFill" bindtap="onImgTap"></image>
       <image class="img" data-i="{{index}}" data-dd="0" src="{{item[1].url}}" mode="aspectFill" bindtap="onImgTap"></image>

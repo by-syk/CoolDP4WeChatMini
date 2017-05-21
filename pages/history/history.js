@@ -47,6 +47,8 @@ Page({
 function loadData(that) {
   // wx.showNavigationBarLoading(); // 在当前页面显示导航条加载动画
 
+  doneDataNum = 0;
+
   wx.request({
     url: app.globalData.api,
     data: {
@@ -56,7 +58,6 @@ function loadData(that) {
     },
     success: function (res) {
       var data = res.data;
-      console.log(data);
       if (data.status != 0 || !data.images || data.images.length == 0) {
         return;
       }
@@ -78,7 +79,6 @@ function loadData(that) {
     },
     success: function (res) {
       var data = res.data;
-      console.log(data);
       if (data.status != 0 || !data.images || data.images.length == 0) {
         return;
       }
@@ -93,6 +93,8 @@ function loadData(that) {
 }
 
 function fillData(that) {
+  console.log('fillData');
+
   if (images2d.length == 0 && images3d.length == 0) {
     return;
   }
