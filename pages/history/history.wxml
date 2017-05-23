@@ -2,9 +2,10 @@
 
 <view class="body">
   <view class="list" wx:for="{{images}}" wx:key="url">
+    <text class="date" wx:if="{{index >= 2}}">- {{item[0].dateLocal}} -</text>
     <view class="row">
-      <image class="img" data-i="{{index}}" data-dd="1" src="{{item[0].url}}" mode="aspectFill" bindtap="onImgTap"></image>
-      <image class="img" data-i="{{index}}" data-dd="0" src="{{item[1].url}}" mode="aspectFill" bindtap="onImgTap"></image>
+      <image class="img" data-i="{{index}}" data-dd="1" src="{{item[0].thumbUrl}}" mode="aspectFill" bindtap="onImgTap" bindlongtap="onImgLongTap"></image>
+      <image class="img" data-i="{{index}}" data-dd="0" src="{{item[1].thumbUrl}}" mode="aspectFill" bindtap="onImgTap" bindlongtap="onImgLongTap"></image>
     </view>
   </view>
   <text class="more">- 更多图请使用「酷安日图」APP浏览 -</text>

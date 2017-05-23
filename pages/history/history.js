@@ -1,4 +1,4 @@
-// history.js
+//history.js
 
 var util = require('../../utils/util.js')
 
@@ -10,6 +10,9 @@ var images3d = [];
 
 // 已加载的数据数（0，1，2）
 var doneDataNum = 0;
+
+// 长按标志，解决长按触发短按事件问题
+var onImgLongTap = false;
 
 Page({
   /**
@@ -31,13 +34,27 @@ Page({
    * 点击事件
    */
   onImgTap: function (event) {
+    if (onImgLongTap) {
+      onImgLongTap = false;
+      return;
+    }
     console.log('onImgTap');
     var itemData = event.target.dataset;
     var category = itemData.dd;
     var date = this.data.images[itemData.i][category == 1 ? 0 : 1].date;
     wx.navigateTo({
-      url: '../index/index?d=' + date + '&dd=' + category,
+      url: '../index/index?d=' + date + '&dd=' + category + '&fromHistory=1',
     });
+  },
+
+  /**
+   * 长按事件
+   */
+  onImgLongTap: function (event) {
+    console.log('onImgLongTap');
+    onImgLongTap = true;
+    var itemData = event.target.dataset;
+    previewImg(this, itemData.i, itemData.dd);
   }
 })
 
@@ -103,30 +120,31 @@ function fillData(that) {
 
   var date = new Date();
   var dateStr = util.formatDate(date);
+  var localDateStrArr = ['今日', '昨日', '前天', '大前天', '四天前', '五天前', '六天前'];
   var index2d = 0;
   var index3d = 0;
   for (var i = 0; i < app.globalData.lookBackNum; ++i) {
-    var image2d;
+    var image2d = {
+      date: dateStr,
+      dateLocal: localDateStrArr[i],
+      url: '',
+      thumbUrl: ''
+    };
     if (dateStr == images2d[index2d].date) {
-      image2d = images2d[index2d];
-      image2d.url = util.getThumbnailUrl(image2d.url);
+      image2d.url = images2d[index2d].url;
+      image2d.thumbUrl = util.getThumbnailUrl(image2d.url);
       index2d++;
-    } else {
-      image2d = {
-        date: dateStr,
-        url: ''
-      };
     }
-    var image3d;
+    var image3d = {
+      date: dateStr,
+      dateLocal: localDateStrArr[i],
+      url: '',
+      thumbUrl: ''
+    };
     if (dateStr == images3d[index3d].date) {
-      image3d = images3d[index3d];
-      image3d.url = util.getThumbnailUrl(image3d.url);
+      image3d.url = images3d[index3d].url;
+      image3d.thumbUrl = util.getThumbnailUrl(image3d.url);
       index3d++;
-    } else {
-      image3d = {
-        date: dateStr,
-        url: ''
-      };
     }
     images.push([
       image2d, image3d
@@ -134,8 +152,29 @@ function fillData(that) {
     date.setDate(date.getDate() - 1);
     dateStr = util.formatDate(date);
   }
-
+  // 刷新界面
   that.setData({
     images: images
+  });
+}
+
+/**
+ * 预览图片
+ */
+function previewImg(that, index, category) {
+  var curUrl = that.data.images[index][category == 1 ? 0 : 1].url;
+  if (!curUrl) {
+    return;
+  }
+  var allUrls = [];
+  if (that.data.images[index][0].url) {
+    allUrls.push(that.data.images[index][0].url);
+  }
+  if (that.data.images[index][1].url) {
+    allUrls.push(that.data.images[index][1].url);
+  }
+  wx.previewImage({
+    current: curUrl,
+    urls: allUrls
   });
 }

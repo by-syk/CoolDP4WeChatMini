@@ -24,11 +24,14 @@ var images = [{
   url: '',
 }];
 
-// 当前日期
+// 当前日期（非 yyyyMMdd 或 yyMMdd 则代表今日）
 var curDate = '0';
 
 // 当前页
 var curSwiperIndex = 0;
+
+// 来自「往期日图」页面
+var fromHistory = false;
 
 // 长按标志，解决长按触发短按事件问题
 var onImgLongTap = false;
@@ -53,7 +56,7 @@ Page({
   onLoad: function (options) {
     console.log('onLoad');
     curDate = options.d;
-    if (curDate) {
+    if (curDate && /^(\d{6}|\d{8})$/.test(curDate)) {
       wx.setNavigationBarTitle({
         title: '酷安日图(' + parseDateForTitle(curDate) + ')',
       });
@@ -64,31 +67,16 @@ Page({
     this.setData({
       curSwiperIndex: curSwiperIndex
     });
+    fromHistory = options.fromHistory == '1';
     loadData(this);
   },
 
-  // /**
-  //  * 生命周期函数--监听页面初次渲染完成
-  //  */
-  // onReady: function () {
-  //   console.log('onReady');
-
-  //   wx.getStorage({
-  //     key: 'donated',
-  //     fail: function(res) {
-  //       wx.getStorage({
-  //         key: 'logs',
-  //         success: function (res) {
-  //           if (res.data.length >= 5) {
-  //             setTimeout(function() {
-  //               showDonate();
-  //             }, 2000);
-  //           }
-  //         },
-  //       });
-  //     }
-  //   });
-  // },
+  onShareAppMessage: function() {
+    return {
+      title: '「酷安日图」之「' + this.data.title + '」',
+      path: '/pages/index/index?d=' + curDate + '&dd=' + (curSwiperIndex == 0 ? 1 : 0),
+    }
+  },
 
   /**
    * 点击事件
@@ -111,42 +99,35 @@ Page({
       return;
     }
     console.log('onImgTap ' + curSwiperIndex);
+    var item1 = '预览';
+    if (wx.getStorageSync('imgLongTapHint') != 'true') {
+      item1 += ' (长按图片)';
+    }
     wx.showActionSheet({
-      itemList: ['预览', '回顾往期'],
-      // itemList: ['预览', '保存', '回顾往期'],
+      itemList: [item1, '回顾往期'],
+      // itemList: [item1, '分享', '回顾往期'],
+      // itemList: [item1, '保存', '回顾往期'],
       success: function (res) {
         switch (res.tapIndex) {
           case 0:
             previewImg(curSwiperIndex == 0 ? 0 : 1);
             break;
           // case 1:
-          //   if (wx.saveImageToPhotosAlbum) {
-          //     wx.saveImageToPhotosAlbum({
-          //       filePath: '/storage/emulated/0/Download/61097358_p0.png',
-          //       success: function(res) {
-          //         console.log('success');
-          //       },
-          //       complete: function(res) {
-          //         console.log('complete');
-          //       },
-          //     })
-          //   } else {
-          //     wx.showModal({
-          //       title: '提示',
-          //       content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
-          //     });
-          //   }
+          //   save2Gallery(curSwiperIndex == 0 ? 0 : 1);
           //   break;
           case 1:
-            if (curDate == '0') {
-              wx.navigateTo({
-                url: '../history/history?d=170518'
-              });
-            } else {
+            if (fromHistory) { // 来自「往期日图」页面，直接回退
               wx.navigateBack({
                 delta: 1
               });
+              break;
             }
+            if (checkDonate()) { // 提示捐赠
+              break;
+            }
+            wx.navigateTo({
+              url: '../history/history?d=170518'
+            });
             break;
         }
       }
@@ -159,7 +140,13 @@ Page({
   onImgLongTap: function (event) {
     console.log('onImgLongTap ' + curSwiperIndex);
     onImgLongTap = true;
-    previewImg(curSwiperIndex == 0 ? 0 : 1);
+    var ok = previewImg(curSwiperIndex == 0 ? 0 : 1);
+    if (ok) {
+      wx.setStorage({
+        key: 'imgLongTapHint',
+        data: 'true',
+      });
+    }
   },
 
   /**
@@ -198,8 +185,15 @@ function loadData(that) {
     },
     success: function (res) {
       var data = res.data;
-      console.log(data);
-      if (data.status != 0 || !data.images || data.images.length == 0) {
+      if (data.status != 0) {
+        return;
+      }
+      if (!data.images || data.images.length == 0) {
+        if (curSwiperIndex == 0) {
+          setTimeout(function() {
+            showImgPreparingDlg();
+          }, 800);
+        }
         return;
       }
       images[0] = data.images[0];
@@ -229,7 +223,15 @@ function loadData(that) {
     success: function (res) {
       var data = res.data;
       console.log(data);
-      if (data.status != 0 || !data.images || data.images.length == 0) {
+      if (data.status != 0) {
+        return;
+      }
+      if (!data.images || data.images.length == 0) {
+        if (curSwiperIndex == 1) {
+          setTimeout(function () {
+            showImgPreparingDlg();
+          }, 800);
+        }
         return;
       }
       images[1] = data.images[0];
@@ -275,7 +277,7 @@ function switchData(that, category) {
 function previewImg(curIndex) {
   var curUrl = images[curIndex].url;
   if (!curUrl) {
-    return;
+    return false;
   }
   var allUrls = [];
   if (images[0].url) {
@@ -288,7 +290,48 @@ function previewImg(curIndex) {
     current: curUrl,
     urls: allUrls
   });
+  return true;
 }
+
+// /**
+//  * 下载原图并保存到图库
+//  * TODO https://cdn.by-syk.com
+//  */
+// function save2Gallery(curIndex) {
+//   var curUrl = images[curIndex].url;
+//   if (!curUrl) {
+//     return;
+//   }
+//   if (!wx.saveImageToPhotosAlbum) {
+//     wx.showModal({
+//       title: '提示',
+//       content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。',
+//       showCancel: false
+//     });
+//     return;
+//   }
+//   wx.downloadFile({
+//     url: curUrl,
+//     success: function(res) {
+//       wx.saveImageToPhotosAlbum({
+//         filePath: res.tempFilePath,
+//         success: function (res) {
+//           wx.showToast({
+//             icon: 'success',
+//             title: '已保存到图库',
+//             duration: 2000
+//           });
+//         },
+//         fail: function (res) {
+//           console.log(res);
+//         },
+//       });
+//     },
+//     fail: function(res) {
+//       console.log(res);
+//     }
+//   });
+// }
 
 // /**
 //  * 显示详情对话框
@@ -337,39 +380,55 @@ function previewImg(curIndex) {
 //   return '';
 // }
 
-// /**
-//  * 显示捐赠提示对话框
-//  */
-// function showDonate() {
-//   console.log('showDonate');
-//   wx.showModal({
-//     title: '捐赠支持',
-//     content: '「酷安日图」由个人开发与维护，且图片存储服务需要一笔不小的费用。如果你喜欢，可以捐赠支持我，多少随意。所得将用于维护服务器运作。',
-//     confirmText: '捐赠',
-//     confirmColor: '#ff5252',
-//     cancelText: '不了',
-//     showCancel: true,
-//     success: function(res) {
-//       wx.setStorage({
-//         key: 'donated',
-//         data: 'true',
-//       });
-//       if (res.confirm) {
-//         donate();
-//       }
-//     }
-//   });
-// }
+function showImgPreparingDlg() {
+  wx.showModal({
+    title: '图缺',
+    content: '似乎管理员偷懒忘记上图了😴',
+    confirmText: '催一催',
+    confirmColor: '#ff5252',
+    showCancel: false,
+    success: function(res) {
+      if (res.confirm) {
+        // TODO
+      }
+    }
+  });
+}
 
-// function donate() {
-//   wx.requestPayment({
-//     timeStamp: Date.now(),
-//     nonceStr: '',
-//     package: '',
-//     signType: '',
-//     paySign: '',
-//   });
-// }
+function checkDonate() {
+  console.log('checkDonate');
+  var donated = wx.getStorageSync('donated');
+  if (donated != 'true') {
+    var logs = wx.getStorageSync('logs') || [];
+    if (logs.length >= 5) {
+      showDonate();
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * 显示捐赠提示对话框
+ */
+function showDonate() {
+  console.log('showDonate');
+  wx.showModal({
+    title: '捐赠支持',
+    content: '「酷安日图」由个人开发与维护，且图片存储服务需要一笔不小的费用。如果你喜欢，可以捐赠支持我，多少随意。所得将用于维护服务器运作。',
+    confirmText: '好的',
+    confirmColor: '#ff5252',
+    showCancel: false,
+    success: function(res) {
+      if (res.confirm) {
+        wx.setStorage({
+          key: 'donated',
+          data: 'true',
+        });
+      }
+    }
+  });
+}
 
 function parseDateForTitle(date) {
   var res = /^(?:\d{2}|\d{4})(\d{2})(\d{2})$/.exec(date);

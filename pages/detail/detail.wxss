@@ -1,4 +1,4 @@
-/* detail.wxss */
+/*detail.wxss*/
 
 view.body {
   display: flex;
