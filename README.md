@@ -1,5 +1,6 @@
 # 「酷安日图」APP的微信小程序 A WeChat Mini Program for Cool Daily Photo APP
 
+> 「酷安日图」APP的小程序版本，每日推送二次元和非二次元好图各一枚，少，而精。
 
 ![截图](art/screenshots.png)
 
