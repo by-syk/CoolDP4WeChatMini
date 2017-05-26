@@ -106,7 +106,7 @@ Page({
     wx.showActionSheet({
       itemList: [item1, '回顾往期'],
       // itemList: [item1, '分享', '回顾往期'],
-      // itemList: [item1, '保存', '回顾往期'],
+      // itemList: [item1, '保存到图库', '回顾往期'],
       success: function (res) {
         switch (res.tapIndex) {
           case 0:

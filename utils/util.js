@@ -1,5 +1,7 @@
 //util.js
 
+var pixelRatio = undefined;
+
 function formatDate(date) {
   var year = date.getFullYear()
   var month = date.getMonth() + 1
@@ -20,15 +22,14 @@ function getThumbnailUrl(url) {
   if (!url) {
     return url;
   }
+  if (!pixelRatio) {
+    pixelRatio = wx.getSystemInfoSync().pixelRatio;
+  }
+  if (pixelRatio < 3) {
+    return url + '-wc720';
+  }
   return url + '-wc';
 }
-
-// function getRawUrl(url) {
-//   if (!url || url.lastIndexOf('-wc') != url.length - 3) {
-//     return url;
-//   }
-//   return url.substring(0, url.length - 3);
-// }
 
 module.exports = {
   formatDate: formatDate,

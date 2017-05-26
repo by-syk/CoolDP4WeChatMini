@@ -10,6 +10,7 @@ App({
       key: 'logs',
       data: logs,
     });
+    // console.log(wx.getSystemInfoSync());
   },
   // getUserInfo:function(cb){
   //   var that = this
