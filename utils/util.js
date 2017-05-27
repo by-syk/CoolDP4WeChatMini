@@ -25,6 +25,9 @@ function getThumbnailUrl(url) {
   if (!pixelRatio) {
     pixelRatio = wx.getSystemInfoSync().pixelRatio;
   }
+  if (pixelRatio < 2) {
+    return url + '-wc640';
+  }
   if (pixelRatio < 3) {
     return url + '-wc720';
   }
